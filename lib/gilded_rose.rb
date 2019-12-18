@@ -1,11 +1,14 @@
 class GildedRose
 
   def initialize(items)
+    # An array of Item instances
     @items = items
   end
 
   def update_quality()
+    # Iterates through loop
     @items.each do |item|
+      # First if statement (has nested statements)
       if item.name != "Aged Brie" and item.name != "Backstage passes to a TAFKAL80ETC concert"
         if item.quality > 0
           if item.name != "Sulfuras, Hand of Ragnaros"
@@ -29,9 +32,11 @@ class GildedRose
           end
         end
       end
+      # Second if statement
       if item.name != "Sulfuras, Hand of Ragnaros"
         item.sell_in = item.sell_in - 1
       end
+      # Third if statement (has nested statements)
       if item.sell_in < 0
         if item.name != "Aged Brie"
           if item.name != "Backstage passes to a TAFKAL80ETC concert"
@@ -49,8 +54,11 @@ class GildedRose
           end
         end
       end
+
     end
+  # End of iteration below
   end
+# End of class below
 end
 
 class Item
