@@ -1,6 +1,7 @@
 #!/usr/bin/ruby -w
 
 require_relative 'gilded_rose'
+require_relative 'item'
 
 puts "OMGHAI!"
 items = [

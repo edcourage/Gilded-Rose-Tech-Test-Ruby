@@ -1,3 +1,5 @@
+require_relative 'item'
+
 class GildedRose
 
   def initialize(items)
@@ -8,6 +10,7 @@ class GildedRose
   def update_quality()
     # Iterates through loop
     @items.each do |item|
+
       # First if statement (has nested statements)
       if item.name != "Aged Brie" and item.name != "Backstage passes to a TAFKAL80ETC concert"
         if item.quality > 0
@@ -32,10 +35,12 @@ class GildedRose
           end
         end
       end
+
       # Second if statement
       if item.name != "Sulfuras, Hand of Ragnaros"
         item.sell_in = item.sell_in - 1
       end
+
       # Third if statement (has nested statements)
       if item.sell_in < 0
         if item.name != "Aged Brie"
@@ -55,22 +60,11 @@ class GildedRose
         end
       end
 
+      # End of iteration below
     end
-  # End of iteration below
+
+  # End of method below
   end
+
 # End of class below
-end
-
-class Item
-  attr_accessor :name, :sell_in, :quality
-
-  def initialize(name, sell_in, quality)
-    @name = name
-    @sell_in = sell_in
-    @quality = quality
-  end
-
-  def to_s()
-    "#{@name}, #{@sell_in}, #{@quality}"
-  end
 end
