@@ -24,11 +24,18 @@ describe GildedRose do
           expect(items[0].quality).to eq 3
       end
 
+      it 'quality can never go below 0' do
+        items = [Item.new("Elixir of the Mongoose", 5, 8)]
+        7.times { GildedRose.new(items).update_quality }
+        expect(items[0].quality).to eq 0
+      end
+
       it 'sell in days will decrease' do
         items = [Item.new("+5 Dexterity Vest", 3, 5)]
         GildedRose.new(items).update_quality
         expect(items[0].sell_in).to eq 2
       end
+
     end
 
     context "Sulfuras, Hand of Ragnaros" do
@@ -103,6 +110,20 @@ describe GildedRose do
         expect(items[0].sell_in).to eq -5
       end
 
+    end
+
+    context 'Conjured item' do
+      it 'degrades at double by 2 before sell by date' do
+        items = [Item.new(name="Conjured Mana Cake", sell_in=3, quality=6)]
+        GildedRose.new(items).update_quality
+        expect(items[0].quality).to eq 4
+      end
+
+      it 'degrades at double by 4 after sell by date' do
+        items = [Item.new(name="Conjured Mana Cake", sell_in=3, quality=20)]
+        5.times { GildedRose.new(items).update_quality }
+        expect(items[0].quality).to eq 6
+      end
     end
 
   end
