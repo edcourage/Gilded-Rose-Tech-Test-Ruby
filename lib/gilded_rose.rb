@@ -12,25 +12,18 @@ class GildedRose
       next if sulfuras?(item)
 
       if item_quality_decreases_with_age?(item)
-        decreases_with_age_quality_updater(item)
+        decreases_with_age_quality_updater(item) #See line 27
       elsif aged_brie?(item)
         past_sell_by_day?(item) ? quality_increase(item, amount: 2) : quality_increase(item)
       else
-        bookings_quality_updater(item)
+        bookings_quality_updater(item) #See line 35
       end
       single_sell_in_day_remover(item)
     end
   end
 
   private
-
-  def bookings_quality_updater(item)
-    quality_remover(item, amount: item.quality) if past_sell_by_day?(item)
-    quality_increase(item, amount: 3) if five_days_to_go?(item)
-    quality_increase(item, amount: 2) if ten_days_to_go?(item)
-    quality_increase(item) if more_than_ten_days_to_go?(item)
-  end
-
+  # big update quality methods for items
   def decreases_with_age_quality_updater(item)
     if conjured?(item)
       past_sell_by_day?(item) ? quality_remover(item, amount: 4) : quality_remover(item, amount: 2)
@@ -39,33 +32,24 @@ class GildedRose
     end
   end
 
+  def bookings_quality_updater(item)
+    quality_increase(item) if more_than_ten_days_to_go?(item)
+    quality_increase(item, amount: 2) if ten_days_to_go?(item)
+    quality_increase(item, amount: 3) if five_days_to_go?(item)
+    quality_remover(item, amount: item.quality) if past_sell_by_day?(item)
+  end
+
+  # update sell in day helper methods
   def single_sell_in_day_remover(item)
     item.sell_in -= 1
   end
 
-  def quality_remover(item, amount: 1)
-    item.quality -= amount unless min_quality?(item)
-    item.quality = 0 if min_quality?(item)
-  end
-
-  def min_quality?(item)
-    !item.quality.positive?
-  end
-
-  def item_quality_decreases_with_age?(item)
-    !aged_brie?(item) && !backstage_passes?(item)
-  end
-
-  def quality_increase(item, amount: 1)
-    item.quality += amount if max_quality?(item)
-  end
-
-  def max_quality?(item)
-    item.quality < 50
-  end
-
   def past_sell_by_day?(item)
     item.sell_in <= 0
+  end
+
+  def five_days_to_go?(item)
+    item.sell_in < 6 && item.quality.positive?
   end
 
   def ten_days_to_go?(item)
@@ -76,10 +60,30 @@ class GildedRose
     item.sell_in > 10
   end
 
-  def five_days_to_go?(item)
-    item.sell_in < 6 && item.quality.positive?
+  # small abstracted update quality methods/helpers
+  def quality_remover(item, amount: 1)
+    item.quality -= amount unless min_quality?(item)
+    item.quality = 0 if min_quality?(item)
   end
 
+  def quality_increase(item, amount: 1)
+    item.quality += amount unless max_quality?(item)
+    item.quality = 50 if max_quality?(item)
+  end
+
+  def min_quality?(item)
+    !item.quality.positive?
+  end
+
+  def item_quality_decreases_with_age?(item)
+    !aged_brie?(item) && !backstage_passes?(item)
+  end
+
+  def max_quality?(item)
+    item.quality >= 50
+  end
+
+  # item matchers
   def sulfuras?(item)
     item.name == 'Sulfuras, Hand of Ragnaros'
   end

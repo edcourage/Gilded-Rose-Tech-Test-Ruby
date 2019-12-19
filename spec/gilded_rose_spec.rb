@@ -60,10 +60,16 @@ describe GildedRose do
         expect(items[0].quality).to eq 8
       end
 
+
       it "Quality can never be more than 50" do
-        items = [Item.new(name="Aged Brie", sell_in=2, quality=0)]
+        items = [
+          Item.new(name="Aged Brie", sell_in=2, quality=0),
+          Item.new(name="Aged Brie", sell_in=-1, quality=49)
+        ]
+
         60.times { GildedRose.new(items).update_quality }
         expect(items[0].quality).to eq 50
+        expect(items[1].quality).to eq 50
       end
 
       it 'sell in days will decrease' do
