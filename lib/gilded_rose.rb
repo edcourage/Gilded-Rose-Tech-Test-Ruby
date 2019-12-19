@@ -17,36 +17,34 @@ class GildedRose
       if item.name != "Aged Brie" and item.name != "Backstage passes to a TAFKAL80ETC concert"
         if past_sell_by_day?(item)
           # removes double quality
-          single_quality_remover(item)
-          single_quality_remover(item)
+          quality_remover(item, amount: 2)
         else
-          single_quality_remover(item)
+          quality_remover(item)
         end
+
         # Aged Brie and Backstage Passes
       else
-
-          # adds quality
-          if past_sell_by_day?(item)
-            single_quality_increase(item)
-            single_quality_increase(item)
-          else
-            single_quality_increase(item)
-          end
-
-          # Backstage Passes for remainder of if statement
-          if item.name == "Backstage passes to a TAFKAL80ETC concert"
-
-            if item.sell_in < 11
-            single_quality_increase(item)
-            end
-            if item.sell_in < 6
-
-            single_quality_increase(item)
-            end
-
+          if item.name == 'Aged Brie'
             if past_sell_by_day?(item)
-              item.quality = item.quality - item.quality
+              quality_increase(item, amount: 2)
+
+            else
+              quality_increase(item)
             end
+
+          else # Backstage Passes for remainder of if statement
+            
+
+              if past_sell_by_day?(item)
+                quality_remover(item, amount: item.quality)
+              elsif item.sell_in < 6
+                 quality_increase(item, amount: 3)
+              elsif item.sell_in < 11
+                quality_increase(item, amount: 2)
+              else
+                quality_increase(item)
+              end
+
 
           end
 
@@ -69,8 +67,8 @@ class GildedRose
     item.sell_in -= 1
   end
 
-  def single_quality_remover(item)
-    item.quality -= 1 if min_quality?(item)
+  def quality_remover(item, amount:  1)
+    item.quality -= amount if min_quality?(item)
   end
 
   def min_quality?(item)
@@ -78,8 +76,9 @@ class GildedRose
   end
 
 
-  def single_quality_increase(item)
-      item.quality += 1 if max_quality?(item)
+
+  def quality_increase(item, amount:  1)
+      item.quality += amount if max_quality?(item)
   end
 
   def max_quality?(item)
