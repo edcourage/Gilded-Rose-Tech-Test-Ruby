@@ -7,13 +7,12 @@ class GildedRose
     @items = items
   end
 
-  def update_quality()
+  def update_quality
     @items.each do |item|
       next if sulfuras?(item)
 
       if item_quality_decreases_with_age?(item)
         decreases_with_age_quality_updater(item)
-
       elsif aged_brie?(item)
         past_sell_by_day?(item) ? quality_increase(item, amount: 2) : quality_increase(item)
       else
@@ -68,8 +67,6 @@ class GildedRose
   def past_sell_by_day?(item)
     item.sell_in <= 0
   end
-
-
 
   def ten_days_to_go?(item)
     item.sell_in < 11 && item.sell_in > 5
