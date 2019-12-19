@@ -15,9 +15,14 @@ class GildedRose
 
       # Deals with quility before sell by date
       if item.name != "Aged Brie" and item.name != "Backstage passes to a TAFKAL80ETC concert"
-
+        if pasted_sell_by_day?(item)
           # removes quality
           single_quality_remover(item)
+          single_quality_remover(item)
+        else
+          single_quality_remover(item)
+        end
+
 
       # Aged Brie and Backstage Passes
       else
@@ -43,14 +48,16 @@ class GildedRose
       # Deals with quility after sell by date
       if item.sell_in < 0
         if item.name != "Aged Brie"
-          if item.name != "Backstage passes to a TAFKAL80ETC concert"
+          # if item.name != "Backstage passes to a TAFKAL80ETC concert"
+          #
+          #     single_quality_remover(item)
+          #
+          # #sets Backstage pass quality to 0 after sell by date (gig)
+          # else
+            if item.name == "Backstage passes to a TAFKAL80ETC concert"
+              item.quality = item.quality - item.quality
+            end
 
-              single_quality_remover(item)
-
-          #sets Backstage pass quality to 0 after sell by date (gig)
-          else
-            item.quality = item.quality - item.quality
-          end
         # stops quality going over 50
         else
         single_quality_increase(item)
@@ -71,12 +78,24 @@ class GildedRose
   end
 
   def single_quality_remover(item)
-    item.quality -= 1 if item.quality > 0
+    item.quality -= 1 if min_quality?(item)
   end
+
+  def min_quality?(item)
+    item.quality > 0
+  end
+
 
   def single_quality_increase(item)
-      item.quality += 1 if item.quality < 50
+      item.quality += 1 if max_quality?(item)
   end
 
+  def max_quality?(item)
+    item.quality < 50
+  end
+
+  def pasted_sell_by_day?(item)
+    item.sell_in <= 0
+  end
 # End of class below
 end
