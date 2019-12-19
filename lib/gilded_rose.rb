@@ -11,24 +11,27 @@ class GildedRose
     # Iterates through loop
     @items.each do |item|
       # Nothing is run for Sulfuras, Hand of Ragnaros
-      return if item.name == "Sulfuras, Hand of Ragnaros"
+      next if item.name == "Sulfuras, Hand of Ragnaros"
 
       # Deals with quility before sell by date
       if item.name != "Aged Brie" and item.name != "Backstage passes to a TAFKAL80ETC concert"
         if pasted_sell_by_day?(item)
-          # removes quality
+          # removes double quality
           single_quality_remover(item)
           single_quality_remover(item)
         else
           single_quality_remover(item)
         end
-
-
-      # Aged Brie and Backstage Passes
+        # Aged Brie and Backstage Passes
       else
         if item.quality < 50
           # adds quality
-          single_quality_increase(item)
+          if pasted_sell_by_day?(item)
+            single_quality_increase(item)
+            single_quality_increase(item)
+          else
+            single_quality_increase(item)
+          end
           # Backstage Passes for remainder of if statement
           if item.name == "Backstage passes to a TAFKAL80ETC concert"
             if item.sell_in < 11
@@ -42,25 +45,22 @@ class GildedRose
         end
       end
 
-      # Removes sell in day from all items apart from Sulfuras, Hand of Ragnaros
+
       single_sell_in_day_remover(item)
 
       # Deals with quility after sell by date
       if item.sell_in < 0
         if item.name != "Aged Brie"
-          # if item.name != "Backstage passes to a TAFKAL80ETC concert"
-          #
-          #     single_quality_remover(item)
-          #
+
           # #sets Backstage pass quality to 0 after sell by date (gig)
-          # else
+
             if item.name == "Backstage passes to a TAFKAL80ETC concert"
               item.quality = item.quality - item.quality
             end
 
-        # stops quality going over 50
+
         else
-        single_quality_increase(item)
+        # single_quality_increase(item)
         end
       end
 
