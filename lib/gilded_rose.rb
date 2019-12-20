@@ -9,11 +9,11 @@ class GildedRose
 
   def update_quality
     @items.each do |item|
-      next if sulfuras?(item)
+      next if item_matcher?(item, 'Sulfuras, Hand of Ragnaros')
 
       if item_quality_decreases_with_age?(item)
         decreases_with_age_quality_updater(item) #See line 27
-      elsif aged_brie?(item)
+      elsif item_matcher?(item, 'Aged Brie')
         past_sell_by_day?(item) ? quality_increase(item, amount: 2) : quality_increase(item)
       else
         bookings_quality_updater(item) #See line 35
@@ -23,9 +23,9 @@ class GildedRose
   end
 
   private
-  # big update quality methods for items
+  # big update quality methods for items... add to itemUpdater class
   def decreases_with_age_quality_updater(item)
-    if conjured?(item)
+    if item_matcher?(item, "Conjured Mana Cake")
       past_sell_by_day?(item) ? quality_remover(item, amount: 4) : quality_remover(item, amount: 2)
     else
       past_sell_by_day?(item) ? quality_remover(item, amount: 2) : quality_remover(item)
@@ -33,9 +33,9 @@ class GildedRose
   end
 
   def bookings_quality_updater(item)
-    quality_increase(item) if more_than_ten_days_to_go?(item)
-    quality_increase(item, amount: 2) if ten_days_to_go?(item)
-    quality_increase(item, amount: 3) if five_days_to_go?(item)
+    quality_increase(item) if select_sell_in_day_range?(item, start_day: Float::INFINITY, end_day: 11)
+    quality_increase(item, amount: 2) if select_sell_in_day_range?(item, start_day: 10, end_day: 6)
+    quality_increase(item, amount: 3) if select_sell_in_day_range?(item, start_day: 5, end_day: 0)
     quality_remover(item, amount: item.quality) if past_sell_by_day?(item)
   end
 
@@ -48,19 +48,17 @@ class GildedRose
     item.sell_in <= 0
   end
 
-  def five_days_to_go?(item)
-    item.sell_in < 6 && item.quality.positive?
+  def select_sell_in_day_range?(item,start_day:, end_day:)
+    item.sell_in <= start_day && item.sell_in >= end_day
   end
 
-  def ten_days_to_go?(item)
-    item.sell_in < 11 && item.sell_in > 5
-  end
 
-  def more_than_ten_days_to_go?(item)
-    item.sell_in > 10
-  end
 
   # small abstracted update quality methods/helpers
+  def item_quality_decreases_with_age?(item)
+    !item_matcher?(item, 'Aged Brie') && !item_matcher?(item, 'Backstage passes to a TAFKAL80ETC concert')
+  end
+
   def quality_remover(item, amount: 1)
     item.quality -= amount unless min_quality?(item)
     item.quality = 0 if min_quality?(item)
@@ -72,32 +70,16 @@ class GildedRose
   end
 
   def min_quality?(item)
-    !item.quality.positive?
-  end
-
-  def item_quality_decreases_with_age?(item)
-    !aged_brie?(item) && !backstage_passes?(item)
+    item.quality.negative?
   end
 
   def max_quality?(item)
     item.quality >= 50
   end
 
-  # item matchers
-  def sulfuras?(item)
-    item.name == 'Sulfuras, Hand of Ragnaros'
-  end
-
-  def aged_brie?(item)
-    item.name == 'Aged Brie'
-  end
-
-  def backstage_passes?(item)
-    item.name == 'Backstage passes to a TAFKAL80ETC concert'
-  end
-
-  def conjured?(item)
-    item.name == "Conjured Mana Cake"
+  # item matcher
+  def item_matcher?(item, item_name)
+    item.name == item_name
   end
 
 end
